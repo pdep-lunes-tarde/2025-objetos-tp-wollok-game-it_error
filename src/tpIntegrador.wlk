@@ -6,16 +6,17 @@ object juegoSaltar {
     const intervaloDeTiempoInicial = 100 // tiempo en que pasan los bloques
     var intervaloDeTiempo = intervaloDeTiempoInicial
     var ultimaAltura = 0
+    var bloqueEnJuego = 0
 
     method intervaloDeTiempo() {
         return intervaloDeTiempo
     }
 
     method ancho() {
-        return 50
+        return 40
     }
     method alto() {
-        return 100
+        return 60
     }
 
     method configurar() {
@@ -31,20 +32,18 @@ object juegoSaltar {
 
         game.onTick(4000, "apareceBloque", {
             const nuevoBloque = new Bloque(position=new Position( x=0, y=ultimaAltura + 2))
-            ultimaAltura = ultimaAltura + 2
+            ultimaAltura = ultimaAltura + 5
             game.addVisual(nuevoBloque)
 
-            game.onTick(10, "moverBloque" + ultimaAltura, { 
-                nuevoBloque.move()
+            bloqueEnJuego = nuevoBloque
 
-                if (nuevoBloque.position().x() >= self.ancho()) {
-                    self.restart()
-                }
+            game.onTick(50, "moverBloque" + ultimaAltura, { 
+                nuevoBloque.move()
             })
         })
 
         keyboard.space().onPressDo {
-            pollito.move()
+            pollito.saltar(bloqueEnJuego)
         }
     }
 
@@ -55,7 +54,7 @@ object juegoSaltar {
     }
 
     method jugar() {
-        // self.configurar()
+        self.configurar()
 
         game.start()
     }
