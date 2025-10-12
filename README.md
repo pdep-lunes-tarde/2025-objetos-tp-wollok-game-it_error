@@ -46,7 +46,9 @@ En esta entrega se evaluará el uso de objetos en el tp. Debe haber presente al 
 
 # Juego: Juego Saltar
 
-Descripcion: Hacer que el pollito salte cuando llega el bloque, para evitar que el mismo lo tire de la pared, y asi ir subiendo
+Descripcion: Hacer que el pollito salte cuando llega el bloque, para evitar que el mismo lo tire de la pared, y asi ir subiendo. Pierde cuando el bloque golpea al pollito, o sea cuando no se salto a tiempo. No se gana en un momento puntual, se busca ver cuanto tiempo aguanta.
+Se controla el pollito, aparecera un menu al principio explicando, y cuando se pierda se avisara en pantalla. 
 
-Controles: Espacio para saltar
+Controles: Tecla espacio para saltar
+
 
