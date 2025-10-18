@@ -2,7 +2,7 @@ import wollok.game.*
 import tpIntegrador.*
 
 object pollito {
-    var posicion = new Position(x=20, y=0)
+    var posicion = new Position(x=15, y=0)
     var enElAire = false
     var ultimaAlturaSegura = 0
 
@@ -56,7 +56,7 @@ object pollito {
     method estaSobreBloque(bloqueEnJuego) {
         var bloqueX = bloqueEnJuego.position().x()
         var bloqueY = bloqueEnJuego.position().y()
-        var bloqueAncho = 200  // ajustar según tamaño real del bloque
+        var bloqueAncho = bloqueEnJuego.ancho()  // ajustar según tamaño real del bloque
 
         return self.entre(self.position().x(), bloqueX, bloqueX + bloqueAncho)
             && posicion.y() <= bloqueY + bloqueEnJuego.alto()
@@ -96,6 +96,40 @@ class Bloque {
 
     method alto(){
         return 3 // Como hacemos para ver el tamaño del bloque???
+    }
+
+    method ancho(){
+        return 2
+    }
+    
+    method chocandoPollito(unPollito){
+        var bloqueX = self.position().x()
+        var bloqueY = self.position().y()
+        var bloqueAncho = self.ancho()   // ajusta según tu bloque
+        var bloqueAlto = self.alto()
+        
+        var pollitoX = unPollito.position().x()
+        var pollitoY = unPollito.position().y()
+        
+        var dentroX = self.entre(pollitoX, bloqueX, bloqueX + bloqueAncho)
+        var dentroY = self.entre(pollitoY, bloqueY, bloqueY + bloqueAlto)
+        
+        return dentroX && dentroY
+    }
+
+
+    /*method estaSobreBloque(bloqueEnJuego) {
+        var bloqueX = bloqueEnJuego.position().x()
+        var bloqueY = bloqueEnJuego.position().y()
+        var bloqueAncho = 200  // ajustar según tamaño real del bloque
+
+        return self.entre(self.position().x(), bloqueX, bloqueX + bloqueAncho)
+            && posicion.y() <= bloqueY + bloqueEnJuego.alto()
+            && posicion.y() >= bloqueY
+    }*/
+
+    method entre(valor, min, max) {
+        return valor >= min && valor <= max
     }
 
 }

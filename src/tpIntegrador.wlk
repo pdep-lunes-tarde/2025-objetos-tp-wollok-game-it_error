@@ -5,7 +5,7 @@ import wollok.game.*
 object juegoSaltar {
     const intervaloDeTiempoInicial = 100 // tiempo en que pasan los bloques
     var intervaloDeTiempo = intervaloDeTiempoInicial
-    var ultimaAltura = 0
+    var ultimaAltura = -2
     var bloqueEnJuego = 0
 
     method intervaloDeTiempo() {
@@ -42,6 +42,10 @@ object juegoSaltar {
                 if(!nuevoBloque.pollitoEnBloque()){
                     nuevoBloque.move()
                 }
+
+                if(nuevoBloque.chocandoPollito(pollito)){
+                    nuevoBloque.chocasteConPollito(pollito)
+                }
             })
             
         })
@@ -59,8 +63,8 @@ object juegoSaltar {
     method restart() {
         intervaloDeTiempo = intervaloDeTiempoInicial
         game.clear()
-        //self.configurar()
-        game.start()
+        self.configurar()
+        //game.start()
     }
 
     method jugar() {
