@@ -32,25 +32,35 @@ object juegoSaltar {
 
         game.onTick(4000, "apareceBloque", {
             const nuevoBloque = new Bloque(position=new Position( x=0, y=ultimaAltura + 2))
-            ultimaAltura = ultimaAltura + 5
+            ultimaAltura = ultimaAltura + nuevoBloque.alto()
             game.addVisual(nuevoBloque)
 
             bloqueEnJuego = nuevoBloque
 
+            
             game.onTick(50, "moverBloque" + ultimaAltura, { 
-                nuevoBloque.move()
+                if(!nuevoBloque.pollitoEnBloque()){
+                    nuevoBloque.move()
+                }
             })
+            
         })
 
         keyboard.space().onPressDo {
             pollito.saltar(bloqueEnJuego)
+        }
+
+        keyboard.up().onPressDo{
+            juegoSaltar.restart()
+            game.start()
         }
     }
 
     method restart() {
         intervaloDeTiempo = intervaloDeTiempoInicial
         game.clear()
-        self.configurar()
+        //self.configurar()
+        game.start()
     }
 
     method jugar() {
