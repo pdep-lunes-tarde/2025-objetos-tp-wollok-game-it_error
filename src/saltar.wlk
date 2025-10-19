@@ -14,33 +14,31 @@ object pollito {
     method saltar(bloqueEnJuego) {
         if (!enElAire) { // solo puede saltar si está en el suelo o sobre un bloque
             enElAire = true
-            self.subir(6, bloqueEnJuego) // altura del salto (4 celdas, podés ajustarlo)
+            self.subir(6, bloqueEnJuego)
         }
     }
 
     method subir(pasos, bloqueEnJuego) {
         if (pasos > 0) {
             posicion = posicion.up(1)
-            game.schedule(60, { self.subir(pasos - 1, bloqueEnJuego) }) // sube de a 1 cada 60ms
+            game.schedule(60, { self.subir(pasos - 1, bloqueEnJuego) })
         } else {
-            self.caer(bloqueEnJuego) // cuando termina de subir, empieza a caer
+            self.caer(bloqueEnJuego)
         }
     }
 
     // Caer
     method caer(bloqueEnJuego) {
-        // Antes de bajar, verificamos si ya debería quedarse arriba del bloque o del suelo
         if (self.deberiaSeguirCayendo(bloqueEnJuego)) {
             posicion = posicion.down(1)
             game.schedule(60, { self.caer(bloqueEnJuego) })
         } else {
             enElAire = false
-            // Alinear exactamente con el bloque o el suelo
-            if (self.estaSobreBloque(bloqueEnJuego)) {
-                posicion = new Position(x = posicion.x(), y = bloqueEnJuego.position().y() + 2) // no se porque no me deja poner lo de alto, queda levitando
-                ultimaAlturaSegura = bloqueEnJuego.position().y() + 2
+            if (bloqueEnJuego != null && self.estaSobreBloque(bloqueEnJuego)) {
+                // Alineo al tope del bloque
+                posicion = new Position(x = posicion.x(), y = bloqueEnJuego.position().y() - 1)
+                ultimaAlturaSegura = posicion.y()
                 bloqueEnJuego.detener()
-
             } else {
                 posicion = new Position(x = posicion.x(), y = ultimaAlturaSegura)
             }
@@ -49,18 +47,17 @@ object pollito {
 
     method deberiaSeguirCayendo(bloqueEnJuego) {
         if (posicion.y() <= ultimaAlturaSegura) return false
-        if (self.estaSobreBloque(bloqueEnJuego)) return false
+        if (bloqueEnJuego != null && self.estaSobreBloque(bloqueEnJuego)) return false
         return true
     }
 
     method estaSobreBloque(bloqueEnJuego) {
+        if (bloqueEnJuego == null) return false
         var bloqueX = bloqueEnJuego.position().x()
         var bloqueY = bloqueEnJuego.position().y()
-        var bloqueAncho = bloqueEnJuego.ancho()  // ajustar según tamaño real del bloque
-
+        var bloqueAncho = bloqueEnJuego.ancho()
         return self.entre(self.position().x(), bloqueX, bloqueX + bloqueAncho)
-            && posicion.y() <= bloqueY + bloqueEnJuego.alto()
-            && posicion.y() >= bloqueY
+            && posicion.y() <= bloqueY && posicion.y() >= bloqueY - bloqueEnJuego.alto()
     }
 
     method entre(valor, min, max) {
@@ -73,8 +70,11 @@ object pollito {
 //*****************************************************//
 
 class Bloque {
-    var property position // Cambia 'posicion' por 'position'
+    var property position
     var property pollitoEnBloque = false
+    var moviendose = true
+    var apilado = false
+    var yaGenero = false
 
     method image() {
         return "bloque.jpg"
@@ -82,20 +82,39 @@ class Bloque {
     method position() {
         return position
     }
-    method chocasteConPollito(unPollito) {
-        // perder
-        juegoSaltar.restart()
+
+    method pollitoEnBloque() {
+        return pollitoEnBloque
     }
+    
+    method chocasteConPollito(unPollito) {
+        // Si el pollito viene desde arriba: aterriza y se apila.
+        if (unPollito.position().y() <= self.position().y()) {
+            self.detener()
+        } else {
+            juegoSaltar.restart()
+        }
+    }
+    
     method move(){
-        position = position.right(1)
+        if (moviendose) {
+            position = position.right(1)
+        }
     }
 
     method detener(){
         pollitoEnBloque = true
+        moviendose = false
+        apilado = true
+        // yaGenero queda false hasta que el juego genere el bloque superior
+    }
+
+    method fueraDeLaPantalla() {
+      return self.position().x() > juegoSaltar.ancho()
     }
 
     method alto(){
-        return 3 // Como hacemos para ver el tamaño del bloque???
+        return 3
     }
 
     method ancho(){
@@ -105,28 +124,17 @@ class Bloque {
     method chocandoPollito(unPollito){
         var bloqueX = self.position().x()
         var bloqueY = self.position().y()
-        var bloqueAncho = self.ancho()   // ajusta según tu bloque
+        var bloqueAncho = self.ancho()
         var bloqueAlto = self.alto()
         
         var pollitoX = unPollito.position().x()
         var pollitoY = unPollito.position().y()
         
         var dentroX = self.entre(pollitoX, bloqueX, bloqueX + bloqueAncho)
-        var dentroY = self.entre(pollitoY, bloqueY, bloqueY + bloqueAlto)
+        var dentroY = self.entre(pollitoY, bloqueY - bloqueAlto, bloqueY)
         
         return dentroX && dentroY
     }
-
-
-    /*method estaSobreBloque(bloqueEnJuego) {
-        var bloqueX = bloqueEnJuego.position().x()
-        var bloqueY = bloqueEnJuego.position().y()
-        var bloqueAncho = 200  // ajustar según tamaño real del bloque
-
-        return self.entre(self.position().x(), bloqueX, bloqueX + bloqueAncho)
-            && posicion.y() <= bloqueY + bloqueEnJuego.alto()
-            && posicion.y() >= bloqueY
-    }*/
 
     method entre(valor, min, max) {
         return valor >= min && valor <= max
