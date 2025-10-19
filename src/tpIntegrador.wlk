@@ -6,7 +6,8 @@ object juegoSaltar {
     const intervaloDeTiempoInicial = 100 // tiempo en que pasan los bloques
     var intervaloDeTiempo = intervaloDeTiempoInicial
     var ultimaAltura = -2
-    var bloqueEnJuego = 0
+    var bloqueEnJuego = null
+    var bloques = []
 
     method intervaloDeTiempo() {
         return intervaloDeTiempo
@@ -29,7 +30,7 @@ object juegoSaltar {
         game.onCollideDo(pollito, { otro =>
             otro.chocasteConPollito(pollito)
         })
-
+        
         game.onTick(4000, "apareceBloque", {
             const nuevoBloque = new Bloque(position=new Position( x=0, y=ultimaAltura + 2))
             ultimaAltura = ultimaAltura + nuevoBloque.alto()
@@ -46,9 +47,10 @@ object juegoSaltar {
                 if(nuevoBloque.chocandoPollito(pollito)){
                     nuevoBloque.chocasteConPollito(pollito)
                 }
+
             })
             
-        })
+        })   
 
         keyboard.space().onPressDo {
             pollito.saltar(bloqueEnJuego)
@@ -74,7 +76,6 @@ object juegoSaltar {
     }
 
 }
-
 
 // //obs
 // si pasa dde largo choca al pollo
