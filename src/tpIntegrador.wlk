@@ -5,7 +5,7 @@ import wollok.game.*
 object juegoSaltar {
     const intervaloDeTiempoInicial = 70 // tiempo en que pasan los bloques
     var intervaloDeTiempo = intervaloDeTiempoInicial
-    var ultimaAltura = -2
+    var ultimaAltura = 0
     var bloqueEnJuego = null
     var bloques = []
     var primeraVez = true // para la parte de configurar y que se pueda reiniciar
@@ -36,7 +36,7 @@ object juegoSaltar {
 
         //reiniciar variables para la segunda vuelta
         intervaloDeTiempo = intervaloDeTiempoInicial
-        ultimaAltura = -2
+        ultimaAltura = 0
         bloqueEnJuego = null
         bloques = []
 
@@ -50,8 +50,9 @@ object juegoSaltar {
         })
         
         game.onTick(tiempoDeAparicion, "apareceBloque", {
-            const nuevoBloque = new Bloque(posicion=new Position( x=0, y=ultimaAltura + 3 )) // cambiar el 3 a una varibale 
-            ultimaAltura = nuevoBloque.position().y()
+            if(!bloques.isEmpty()) ultimaAltura = bloques.last().position().y() + bloques.last().alto()
+            const nuevoBloque = new Bloque(posicion=new Position( x=0, y=ultimaAltura)) // cambiar el 3 a una varibale 
+            
             game.addVisual(nuevoBloque)
 
             bloqueEnJuego = nuevoBloque
@@ -68,11 +69,7 @@ object juegoSaltar {
                 }
 
                 if(nuevoBloque.seFueDePantalla()){ // si salto uno entero
-                    //game.removeVisual(nuevoBloque)
-                    //nuevoBloque.detener()
-                    //bloques.remove(nuevoBloque)
-                    //ultimaAltura = ultimaAltura - nuevoBloque.alto()
-                    nuevoBloque.posicion(new Position(x = 0, y = nuevoBloque.posicion().y()))
+                    bloques.remove(nuevoBloque)
                 }
 
             })
@@ -109,7 +106,6 @@ object juegoSaltar {
             self.configurar()
            
         }
-
     }
 
     method jugar() {
@@ -118,23 +114,13 @@ object juegoSaltar {
         game.start()
     }
 
-    /*method actualizarCamara() {
-        const alturaPollito = pollito.posicion().y()
-        if (alturaPollito > offsetCamara + alturaCamara) {
-            camara.moverA(alturaPollito - alturaCamara)
-            bloques.forEach({b => b.posicion().down(alturaPollito - alturaCamara)})
-        }
-    }*/
     method actualizarCamara() {
         const alturaPollito = pollito.posicion().y()
         if (alturaPollito > offsetCamara + alturaCamara) {
             const delta = alturaPollito - (offsetCamara + alturaCamara)
             offsetCamara += delta
-            bloques.forEach({ b => b.posicion().down(delta) })
-            pollito.posicion().down(delta)
+            bloques.forEach({ b => b.posicion(new Position(x = b.posicion().x(), y = b.posicion().y() - delta ))})
+            pollito.posicion(new Position(x = pollito.posicion().x(), y = pollito.posicion().y() - delta)) 
         }
     }
-
-
-
 }

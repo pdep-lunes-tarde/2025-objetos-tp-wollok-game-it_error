@@ -14,20 +14,20 @@ describe "Tests de interaccion Pollito - Bloque" {
 	}
 
 	test "Bloque conserva position" {
-		const bloque = new Bloque(position = new Position(x = 10, y = 5))
+		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
 		assert.equals(10, bloque.position().x())
 		assert.equals(5, bloque.position().y())
 	}
 
 	test "Bloque ancho y alto son positivos" {
-		const bloque = new Bloque(position = new Position(x = 0, y = 0))
+		const bloque = new Bloque(posicion = new Position(x = 0, y = 0))
 		// Verifica que existan métodos ancho() y alto() y que devuelvan valores razonables
 		assert.equals(bloque.ancho() > 0, true)
 		assert.equals(bloque.alto() > 0, true)
 	}
 
 	test "El pollito está sobre el bloque" {
-		const bloque = new Bloque(position = new Position(x = 10, y = 5))
+		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
 		const pollito = object {
 			method position() = new Position(x = 11, y = 9)
 			method entre(valor, min, max) = valor >= min && valor <= max
@@ -47,7 +47,7 @@ describe "Tests de interaccion Pollito - Bloque" {
 	}
 
 	test "El pollito está debajo del bloque (sin estar sobre él)" {
-		const bloque = new Bloque(position = new Position(x = 10, y = 5))
+		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
 		const pollito = object {
 			method position() = new Position(x = 11, y = 3)
 			method entre(valor, min, max) = valor >= min && valor <= max
@@ -65,7 +65,7 @@ describe "Tests de interaccion Pollito - Bloque" {
 	}
 
 	test "El pollito es golpeado lateralmente (lado izquierdo)" {
-		const bloque = new Bloque(position = new Position(x = 10, y = 5))
+		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
 		const pollito = object {
 			method position() = new Position(x = 9, y = 6)
 		}
@@ -74,7 +74,7 @@ describe "Tests de interaccion Pollito - Bloque" {
 	}
 
 	test "El pollito está cayendo al costado del bloque (sin chocar)" {
-		const bloque = new Bloque(position = new Position(x = 10, y = 5))
+		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
 		const pollito = object {
 			method position() = new Position(x = 8, y = 12)
 		}

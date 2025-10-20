@@ -10,9 +10,8 @@ object pollito {
 
     method image() = "pollitoPdep.png"
 
-    method position() = new Position(x=posicion.x(), y=camara.aplicar(posicion.y()))
-    //method position() = posicion
-
+    method position() = new Position(x=posicion.x(), y=camara.aplicar(posicion.y())) // devuelve la posicion acomodada a la camara
+    
     // Salto
     method saltar(bloqueEnJuego) {
         if (!enElAire) { // solo puede saltar si está en el suelo o sobre un bloque
@@ -24,9 +23,6 @@ object pollito {
     method subir(pasos, bloqueEnJuego) {
         if (pasos > 0) {
             posicion = posicion.up(1)
-            /*if (posicion.y() > juegoSaltar.alturaCamara()) {
-                juegoSaltar.moverMundo(1)
-            }*/
             game.schedule(velocidadSalto, { self.subir(pasos - 1, bloqueEnJuego) })
         } else {
             self.caer(bloqueEnJuego)
@@ -48,7 +44,6 @@ object pollito {
 
                 // Actualizar cámara SOLO al aterrizar sobre bloque
                 if (posicion.y() > camara.offsetY() + juegoSaltar.alturaCamara()) {
-                    //camara.moverA(posicion.y() - juegoSaltar.alturaCamara())
                     juegoSaltar.actualizarCamara()
                 }
             } else {
@@ -90,13 +85,10 @@ class Bloque {
     var property posicion
     var property pollitoEnBloque = false
     var moviendose = true
-    //var apilado = false
-    //var yaGenero = false
 
     method image() =  "bloque.jpg"
     
-    method position() = new Position(x=posicion.x(), y=camara.aplicar(posicion.y()))
-    //method position() = position
+    method position() = new Position(x=posicion.x(), y=camara.aplicar(posicion.y())) // devuelve la posicion acomodada para la pantalla
     
     method chocasteConPollito(unPollito) {
         self.detener()
@@ -112,8 +104,6 @@ class Bloque {
     method detener(){
         pollitoEnBloque = true
         moviendose = false
-        //apilado = true
-        // yaGenero queda false hasta que el juego genere el bloque superior
     }
 
     method seFueDePantalla() = self.position().x() > game.width()
