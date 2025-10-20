@@ -12,6 +12,8 @@ object juegoSaltar {
     var bloquesSaltados = 0
     var tiempoDeAparicionInicial = 4000
     var tiempoDeAparicion = tiempoDeAparicionInicial
+    const property alturaCamara = 5  // cuando el pollito pasa esta altura, el mundo baja
+    var property offsetCamara = 0
 
     method intervaloDeTiempo() {
         return intervaloDeTiempo
@@ -48,11 +50,12 @@ object juegoSaltar {
         })
         
         game.onTick(tiempoDeAparicion, "apareceBloque", {
-            const nuevoBloque = new Bloque(position=new Position( x=0, y=ultimaAltura + 3 )) // cambiar el 3 a una varibale 
+            const nuevoBloque = new Bloque(posicion=new Position( x=0, y=ultimaAltura + 3 )) // cambiar el 3 a una varibale 
             ultimaAltura = nuevoBloque.position().y()
             game.addVisual(nuevoBloque)
 
             bloqueEnJuego = nuevoBloque
+            bloques.add(nuevoBloque)
 
             game.onTick(intervaloDeTiempo, "moverBloque" + ultimaAltura, { 
                 if(!nuevoBloque.pollitoEnBloque() && !nuevoBloque.seFueDePantalla()){
@@ -65,10 +68,12 @@ object juegoSaltar {
                 }
 
                 if(nuevoBloque.seFueDePantalla()){ // si salto uno entero
-                    game.removeVisual(nuevoBloque)
-                    ultimaAltura = ultimaAltura - nuevoBloque.alto()
+                    //game.removeVisual(nuevoBloque)
+                    //nuevoBloque.detener()
+                    //bloques.remove(nuevoBloque)
+                    //ultimaAltura = ultimaAltura - nuevoBloque.alto()
+                    nuevoBloque.posicion(new Position(x = 0, y = nuevoBloque.posicion().y()))
                 }
-
 
             })
 
@@ -97,14 +102,14 @@ object juegoSaltar {
         bloquesSaltados = 0
         intervaloDeTiempo = intervaloDeTiempoInicial
         tiempoDeAparicion = tiempoDeAparicionInicial
-        //game.stop()
+        camara.moverA(0)
+
         keyboard.space().onPressDo {
             game.clear()
             self.configurar()
            
         }
-        //self.configurar()
-        //game.start()
+
     }
 
     method jugar() {
@@ -112,5 +117,24 @@ object juegoSaltar {
 
         game.start()
     }
+
+    /*method actualizarCamara() {
+        const alturaPollito = pollito.posicion().y()
+        if (alturaPollito > offsetCamara + alturaCamara) {
+            camara.moverA(alturaPollito - alturaCamara)
+            bloques.forEach({b => b.posicion().down(alturaPollito - alturaCamara)})
+        }
+    }*/
+    method actualizarCamara() {
+        const alturaPollito = pollito.posicion().y()
+        if (alturaPollito > offsetCamara + alturaCamara) {
+            const delta = alturaPollito - (offsetCamara + alturaCamara)
+            offsetCamara += delta
+            bloques.forEach({ b => b.posicion().down(delta) })
+            pollito.posicion().down(delta)
+        }
+    }
+
+
 
 }

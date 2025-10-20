@@ -10,7 +10,8 @@ object pollito {
 
     method image() = "pollitoPdep.png"
 
-    method position() = posicion
+    method position() = new Position(x=posicion.x(), y=camara.aplicar(posicion.y()))
+    //method position() = posicion
 
     // Salto
     method saltar(bloqueEnJuego) {
@@ -23,6 +24,9 @@ object pollito {
     method subir(pasos, bloqueEnJuego) {
         if (pasos > 0) {
             posicion = posicion.up(1)
+            /*if (posicion.y() > juegoSaltar.alturaCamara()) {
+                juegoSaltar.moverMundo(1)
+            }*/
             game.schedule(velocidadSalto, { self.subir(pasos - 1, bloqueEnJuego) })
         } else {
             self.caer(bloqueEnJuego)
@@ -41,6 +45,12 @@ object pollito {
                 posicion = new Position(x = posicion.x(), y = bloqueEnJuego.position().y() + bloqueEnJuego.alto() - 1)
                 ultimaAlturaSegura = bloqueEnJuego.position().y() + bloqueEnJuego.alto() - 1
                 bloqueEnJuego.detener()
+
+                // Actualizar cámara SOLO al aterrizar sobre bloque
+                if (posicion.y() > camara.offsetY() + juegoSaltar.alturaCamara()) {
+                    //camara.moverA(posicion.y() - juegoSaltar.alturaCamara())
+                    juegoSaltar.actualizarCamara()
+                }
             } else {
                 posicion = new Position(x = posicion.x(), y = ultimaAlturaSegura)
             }
@@ -64,9 +74,7 @@ object pollito {
             
     }
 
-    method entre(valor, min, max) {
-        return valor >= min && valor <= max
-    }
+    method entre(valor, min, max) = valor >= min && valor <= max
 
     method reiniciar(){
         posicion = new Position(x = 15, y = 0)
@@ -76,22 +84,19 @@ object pollito {
 
 }
 
-
 //*****************************************************//
 
 class Bloque {
-    var property position
+    var property posicion
     var property pollitoEnBloque = false
     var moviendose = true
-    var apilado = false
-    var yaGenero = false
+    //var apilado = false
+    //var yaGenero = false
 
-    method image() {
-        return "bloque.jpg"
-    }
-    method position() {
-        return position
-    }
+    method image() =  "bloque.jpg"
+    
+    method position() = new Position(x=posicion.x(), y=camara.aplicar(posicion.y()))
+    //method position() = position
     
     method chocasteConPollito(unPollito) {
         self.detener()
@@ -100,14 +105,14 @@ class Bloque {
     
     method move(){
         if (moviendose) {
-            position = position.right(1)
+            posicion = posicion.right(1)
         }
     }
 
     method detener(){
         pollitoEnBloque = true
         moviendose = false
-        apilado = true
+        //apilado = true
         // yaGenero queda false hasta que el juego genere el bloque superior
     }
 
@@ -117,13 +122,9 @@ class Bloque {
       return self.position().x() > juegoSaltar.ancho()
     }
 
-    method alto(){ 
-        return 3
-    }
+    method alto() = 3
 
-    method ancho(){
-        return 2
-    }
+    method ancho() = 2
     
     method chocandoPollito(unPollito){
         const bx = self.position().x()
@@ -139,18 +140,31 @@ class Bloque {
         return dentroX && dentroY
     }
 
-    method entre(valor, min, max) {
-        return valor >= min && valor <= max
-    }
+    method entre(valor, min, max) = valor >= min && valor <= max
 
 }
 
+//*****************************************************//
+
 object mensajePerdiste {
     method position() {
-        return game.at(15, game.height()/2)
+        return game.at(10, game.height()/2)
     }
 
-    method image() {
-        return "Game_Over2.png" 
+    method image() = "Game_Over2.png" 
+    
+}
+
+//*****************************************************//
+
+object camara {
+    var property offsetY = 0
+
+    method moverA(y) {
+        offsetY = y
+    }
+
+    method aplicar(yMundo) {
+        return yMundo - offsetY
     }
 }
