@@ -111,6 +111,8 @@ class Bloque {
         // yaGenero queda false hasta que el juego genere el bloque superior
     }
 
+    method seFueDePantalla() = self.position().x() > game.width()
+
     method fueraDeLaPantalla() {
       return self.position().x() > juegoSaltar.ancho()
     }
@@ -145,7 +147,7 @@ class Bloque {
 
 object mensajePerdiste {
     method position() {
-        return game.at(game.width()/2, game.height()/2)
+        return game.at(15, game.height()/2)
     }
 
     method image() {
