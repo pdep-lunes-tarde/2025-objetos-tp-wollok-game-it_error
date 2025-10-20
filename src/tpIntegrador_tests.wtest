@@ -31,17 +31,19 @@ describe "Tests de interaccion Pollito - Bloque" {
 		const pollito = object {
 			method position() = new Position(x = 11, y = 9)
 			method entre(valor, min, max) = valor >= min && valor <= max
+
 			method estaSobreBloque(b) {
-				var bloqueX = b.position().x()
-				var bloqueY = b.position().y()
-				var bloqueAncho = b.ancho()
+				const bloqueX = b.position().x()
+				const bloqueY = b.position().y()
+				const bloqueAncho = b.ancho()
+				
 				return self.entre(self.position().x(), bloqueX, bloqueX + bloqueAncho)
-					&& self.position().y() <= bloqueY + b.alto()
-					&& self.position().y() >= bloqueY
+					&& self.position().y() >= bloqueY + b.alto()
+					
 			}
 		}
 
-		assert.equals(pollito.estaSobreBloque(bloque), true)
+		assert.equals(true, pollito.estaSobreBloque(bloque))
 	}
 
 	test "El pollito está debajo del bloque (sin estar sobre él)" {
@@ -50,9 +52,9 @@ describe "Tests de interaccion Pollito - Bloque" {
 			method position() = new Position(x = 11, y = 3)
 			method entre(valor, min, max) = valor >= min && valor <= max
 			method estaSobreBloque(b) {
-				var bloqueX = b.position().x()
-				var bloqueY = b.position().y()
-				var bloqueAncho = b.ancho()
+				const bloqueX = b.position().x()
+				const bloqueY = b.position().y()
+				const bloqueAncho = b.ancho()
 				return self.entre(self.position().x(), bloqueX, bloqueX + bloqueAncho)
 					&& self.position().y() <= bloqueY + b.alto()
 					&& self.position().y() >= bloqueY
@@ -68,7 +70,7 @@ describe "Tests de interaccion Pollito - Bloque" {
 			method position() = new Position(x = 9, y = 6)
 		}
 
-		assert.equals(bloque.chocandoPollito(pollito), true)
+		assert.equals(true, bloque.chocandoPollito(pollito))
 	}
 
 	test "El pollito está cayendo al costado del bloque (sin chocar)" {

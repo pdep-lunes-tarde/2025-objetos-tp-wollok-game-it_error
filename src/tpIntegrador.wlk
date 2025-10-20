@@ -3,12 +3,15 @@ import src.saltar.*
 import wollok.game.*
 
 object juegoSaltar {
-    const intervaloDeTiempoInicial = 100 // tiempo en que pasan los bloques
+    const intervaloDeTiempoInicial = 70 // tiempo en que pasan los bloques
     var intervaloDeTiempo = intervaloDeTiempoInicial
     var ultimaAltura = -2
     var bloqueEnJuego = null
     var bloques = []
     var primeraVez = true // para la parte de configurar y que se pueda reiniciar
+    var bloquesSaltados = 0
+    var tiempoDeAparicionInicial = 4000
+    var tiempoDeAparicion = tiempoDeAparicionInicial
 
     method intervaloDeTiempo() {
         return intervaloDeTiempo
@@ -35,6 +38,8 @@ object juegoSaltar {
         bloqueEnJuego = null
         bloques = []
 
+        pollito.ultimaAlturaSegura(0)
+
 
         game.addVisual(pollito)
 
@@ -42,15 +47,14 @@ object juegoSaltar {
             otro.chocasteConPollito(pollito)
         })
         
-        game.onTick(4000, "apareceBloque", {
-            const nuevoBloque = new Bloque(position=new Position( x=0, y=ultimaAltura + 3))
-            ultimaAltura = ultimaAltura + nuevoBloque.alto()
+        game.onTick(tiempoDeAparicion, "apareceBloque", {
+            const nuevoBloque = new Bloque(position=new Position( x=0, y=ultimaAltura + 3 )) // cambiar el 3 a una varibale 
+            ultimaAltura = nuevoBloque.position().y()
             game.addVisual(nuevoBloque)
 
             bloqueEnJuego = nuevoBloque
 
-            
-            game.onTick(50, "moverBloque" + ultimaAltura, { 
+            game.onTick(intervaloDeTiempo, "moverBloque" + ultimaAltura, { 
                 if(!nuevoBloque.pollitoEnBloque()){
                     nuevoBloque.move()
                 }
@@ -60,12 +64,20 @@ object juegoSaltar {
                     game.removeVisual(nuevoBloque)
                 }
 
-                if(nuevoBloque.position().x() > game.width()){
-                    self.restart()
+                if(nuevoBloque.position().x() > game.width()){ // si salto uno entero
+                    game.removeVisual(nuevoBloque)
+                    ultimaAltura = ultimaAltura - nuevoBloque.alto()
                 }
 
+
             })
-            
+
+            bloquesSaltados += 1
+
+            if(bloquesSaltados.even() && bloquesSaltados <= 20){
+                intervaloDeTiempo -= 5
+                tiempoDeAparicion -= 150
+            }
         })   
 
         keyboard.space().onPressDo {
@@ -73,7 +85,7 @@ object juegoSaltar {
         }
 
         keyboard.up().onPressDo{
-            juegoSaltar.restart()
+            self.restart()
             game.start()
         }
     }
@@ -82,6 +94,9 @@ object juegoSaltar {
         game.clear()
         game.addVisual(mensajePerdiste)
         pollito.reiniciar()
+        bloquesSaltados = 0
+        intervaloDeTiempo = intervaloDeTiempoInicial
+        tiempoDeAparicion = tiempoDeAparicionInicial
         //game.stop()
         keyboard.space().onPressDo {
             game.clear()

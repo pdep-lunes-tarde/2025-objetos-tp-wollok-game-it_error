@@ -2,9 +2,11 @@ import wollok.game.*
 import tpIntegrador.*
 
 object pollito {
-    var posicion = new Position(x=15, y=0)
+    var property posicion = new Position(x=15, y=0)
     var enElAire = false
-    var ultimaAlturaSegura = 0
+    var property ultimaAlturaSegura = 0
+    const alturaSalto = 6
+    var property velocidadSalto = 60
 
     method image() = "pollitoPdep.png"
 
@@ -14,14 +16,14 @@ object pollito {
     method saltar(bloqueEnJuego) {
         if (!enElAire) { // solo puede saltar si está en el suelo o sobre un bloque
             enElAire = true
-            self.subir(6, bloqueEnJuego)
+            self.subir(alturaSalto, bloqueEnJuego)
         }
     }
 
     method subir(pasos, bloqueEnJuego) {
         if (pasos > 0) {
             posicion = posicion.up(1)
-            game.schedule(60, { self.subir(pasos - 1, bloqueEnJuego) })
+            game.schedule(velocidadSalto, { self.subir(pasos - 1, bloqueEnJuego) })
         } else {
             self.caer(bloqueEnJuego)
         }
@@ -31,7 +33,7 @@ object pollito {
     method caer(bloqueEnJuego) {
         if (self.deberiaSeguirCayendo(bloqueEnJuego)) {
             posicion = posicion.down(1)
-            game.schedule(60, { self.caer(bloqueEnJuego) })
+            game.schedule(velocidadSalto, { self.caer(bloqueEnJuego) })
         } else {
             enElAire = false
             if (bloqueEnJuego != null && self.estaSobreBloque(bloqueEnJuego)) {
@@ -53,9 +55,9 @@ object pollito {
 
     method estaSobreBloque(bloqueEnJuego) {
         if (bloqueEnJuego == null) return false
-        var bloqueX = bloqueEnJuego.position().x()
-        var bloqueY = bloqueEnJuego.position().y()
-        var bloqueAncho = bloqueEnJuego.ancho()
+        const bloqueX = bloqueEnJuego.position().x()
+        const bloqueY = bloqueEnJuego.position().y()
+        const bloqueAncho = bloqueEnJuego.ancho()
         
         return self.entre(self.position().x(), bloqueX, bloqueX + bloqueAncho)
             && posicion.y() >= bloqueY + bloqueEnJuego.alto()
@@ -113,7 +115,7 @@ class Bloque {
       return self.position().x() > juegoSaltar.ancho()
     }
 
-    method alto(){
+    method alto(){ 
         return 3
     }
 
@@ -122,16 +124,16 @@ class Bloque {
     }
     
     method chocandoPollito(unPollito){
-        var bx = self.position().x()
-        var by = self.position().y()
-        var ancho = self.ancho()
-        var alto = self.alto()
+        const bx = self.position().x()
+        const by = self.position().y()
+        const ancho = self.ancho()
+        const alto = self.alto()
 
-        var px = unPollito.position().x()
-        var py = unPollito.position().y()
+        const px = unPollito.position().x()
+        const py = unPollito.position().y()
 
-        var dentroX = (px >= bx) && (px < bx + ancho)
-        var dentroY = (py >= by - alto) && (py <= by)
+        const dentroX = (px >= bx) && (px < bx + ancho)
+        const dentroY = (py >= by - alto) && (py <= by)
         return dentroX && dentroY
     }
 
@@ -146,7 +148,7 @@ object mensajePerdiste {
         return game.at(game.width()/2, game.height()/2)
     }
 
-    method text() {
-        return "Perdiste" 
+    method image() {
+        return "Game_Over2.png" 
     }
 }
