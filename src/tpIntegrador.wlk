@@ -60,6 +60,10 @@ object juegoSaltar {
                     game.removeVisual(nuevoBloque)
                 }
 
+                if(nuevoBloque.position().x() > game.width()){
+                    self.restart()
+                }
+
             })
             
         })   
