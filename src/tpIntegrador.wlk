@@ -55,7 +55,7 @@ object juegoSaltar {
             bloqueEnJuego = nuevoBloque
 
             game.onTick(intervaloDeTiempo, "moverBloque" + ultimaAltura, { 
-                if(!nuevoBloque.pollitoEnBloque()){
+                if(!nuevoBloque.pollitoEnBloque() && !nuevoBloque.seFueDePantalla()){
                     nuevoBloque.move()
                 }
 
@@ -64,7 +64,7 @@ object juegoSaltar {
                     game.removeVisual(nuevoBloque)
                 }
 
-                if(nuevoBloque.position().x() > game.width()){ // si salto uno entero
+                if(nuevoBloque.seFueDePantalla()){ // si salto uno entero
                     game.removeVisual(nuevoBloque)
                     ultimaAltura = ultimaAltura - nuevoBloque.alto()
                 }
