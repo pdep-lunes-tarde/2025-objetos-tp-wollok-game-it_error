@@ -8,6 +8,7 @@ object juegoSaltar {
     var ultimaAltura = -2
     var bloqueEnJuego = null
     var bloques = []
+    var primeraVez = true // para la parte de configurar y que se pueda reiniciar
 
     method intervaloDeTiempo() {
         return intervaloDeTiempo
@@ -21,9 +22,19 @@ object juegoSaltar {
     }
 
     method configurar() {
-        game.width(self.ancho())
-        game.height(self.alto())
-        game.cellSize(32)
+        if(primeraVez){
+            game.width(self.ancho())
+            game.height(self.alto())
+            game.cellSize(32)
+            primeraVez = false
+        }
+
+        //reiniciar variables para la segunda vuelta
+        intervaloDeTiempo = intervaloDeTiempoInicial
+        ultimaAltura = -2
+        bloqueEnJuego = null
+        bloques = []
+
 
         game.addVisual(pollito)
 
@@ -32,7 +43,7 @@ object juegoSaltar {
         })
         
         game.onTick(4000, "apareceBloque", {
-            const nuevoBloque = new Bloque(position=new Position( x=0, y=ultimaAltura + 2))
+            const nuevoBloque = new Bloque(position=new Position( x=0, y=ultimaAltura + 3))
             ultimaAltura = ultimaAltura + nuevoBloque.alto()
             game.addVisual(nuevoBloque)
 
@@ -46,6 +57,7 @@ object juegoSaltar {
 
                 if(nuevoBloque.chocandoPollito(pollito)){
                     nuevoBloque.chocasteConPollito(pollito)
+                    game.removeVisual(nuevoBloque)
                 }
 
             })
@@ -63,9 +75,16 @@ object juegoSaltar {
     }
 
     method restart() {
-        intervaloDeTiempo = intervaloDeTiempoInicial
         game.clear()
-        self.configurar()
+        game.addVisual(mensajePerdiste)
+        pollito.reiniciar()
+        //game.stop()
+        keyboard.space().onPressDo {
+            game.clear()
+            self.configurar()
+           
+        }
+        //self.configurar()
         //game.start()
     }
 
@@ -76,12 +95,3 @@ object juegoSaltar {
     }
 
 }
-
-// //obs
-// si pasa dde largo choca al pollo
-
-//Ideas de como complejizarlo 
-// Distintos bloques
-// ** que vayan aumentando la velocidad los bloques
-// ** que se vayan haciendo mas angostos los bloques
-// ** poder apilar infinitos bloques
