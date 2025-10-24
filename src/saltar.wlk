@@ -6,7 +6,7 @@ object pollito {
     var property enElAire = false
     var property ultimaAlturaSegura = 0
     const alturaSalto = 6
-    var property velocidadSalto = 60
+    var property velocidadSalto = 75
 
     method image() = "pollitoPdep.png"
 
@@ -39,8 +39,8 @@ object pollito {
             enElAire = false
             if (bloqueEnJuego != null && self.estaSobreBloque(bloqueEnJuego)) {
                 // Alineo al tope del bloque
-                posicion = new Position(x = posicion.x(), y = bloqueEnJuego.position().y() + bloqueEnJuego.alto() - 1)
-                ultimaAlturaSegura = bloqueEnJuego.position().y() + bloqueEnJuego.alto() - 1
+                posicion = new Position(x = posicion.x(), y = bloqueEnJuego.position().y() + bloqueEnJuego.alto())
+                ultimaAlturaSegura = bloqueEnJuego.position().y() + bloqueEnJuego.alto()
                 bloqueEnJuego.detener()
 
                 // Actualizar cámara SOLO al aterrizar sobre bloque
@@ -115,7 +115,7 @@ class Bloque {
 
     method alto() = 3
 
-    method ancho() = 2
+    method ancho() = 6
     
     method chocandoPollito(unPollito){
         const bx = self.position().x()
@@ -127,13 +127,9 @@ class Bloque {
         const py = unPollito.position().y()
 
         const dentroX = (px >= bx) && (px < bx + ancho)
-        const dentroY = (py >= by - alto) && (py <= by)
-        return dentroX && (py < (by + alto - 1))
-
-        /* Copilot dice asi
-        const dentroX =  px >= bx && px <= (bx + ancho - 1)
-        const dentroY = py >= (by + alto - 1)
-        return dentroX && (py < (by + alto - 1)) */
+        const dentroY = (py >= by - alto - 1) && (py <= by)
+        
+        return dentroX && dentroY
     }
 
     method entre(valor, min, max) = valor >= min && valor <= max
@@ -166,17 +162,21 @@ object camara {
 }
 
 object puntaje {
-    var property puntos = 0
+    var property puntos = 0 
 
     method text() = "Puntuacion: " + puntos.toString()
 
     method position() = game.at(1, game.height() - 2)
 
     method reiniciar(){
-        puntos = 0
+        puntos = -1  // reinicia a -1 porque toma el piso como saltado
     }
 
     method sumar() {
         puntos += 1
     } 
+    
+    method restar(){
+        puntos -= 1
+    }
 }
