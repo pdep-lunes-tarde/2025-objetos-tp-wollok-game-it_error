@@ -1,5 +1,85 @@
+import src.saltar.*
 import tpIntegrador.*
 
 test "Test de prueba" {
 	assert.equals(4, 2 + 2)
+}
+
+describe "Tests de interaccion Pollito - Bloque" {
+
+    test "Position getters" {
+    const p = new Position(x = 10, y = 5)
+    assert.equals(10, p.x())
+    assert.equals(5, p.y())
+	}
+
+	test "Bloque conserva position" {
+		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
+		assert.equals(10, bloque.position().x())
+		assert.equals(5, bloque.position().y())
+	}
+
+	test "Bloque ancho y alto son positivos" {
+		const bloque = new Bloque(posicion = new Position(x = 0, y = 0))
+		// Verifica que existan métodos ancho() y alto() y que devuelvan valores razonables
+		assert.equals(bloque.ancho() > 0, true)
+		assert.equals(bloque.alto() > 0, true)
+	}
+
+	test "El pollito está sobre el bloque" {
+		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
+		const pollito = object {
+			method position() = new Position(x = 11, y = 9)
+			method entre(valor, min, max) = valor >= min && valor <= max
+
+			method estaSobreBloque(b) {
+				const bloqueX = b.position().x()
+				const bloqueY = b.position().y()
+				const bloqueAncho = b.ancho()
+				
+				return self.entre(self.position().x(), bloqueX, bloqueX + bloqueAncho)
+					&& self.position().y() >= bloqueY + b.alto()
+					
+			}
+		}
+
+		assert.equals(true, pollito.estaSobreBloque(bloque))
+	}
+
+	test "El pollito está debajo del bloque (sin estar sobre él)" {
+		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
+		const pollito = object {
+			method position() = new Position(x = 11, y = 3)
+			method entre(valor, min, max) = valor >= min && valor <= max
+			method estaSobreBloque(b) {
+				const bloqueX = b.position().x()
+				const bloqueY = b.position().y()
+				const bloqueAncho = b.ancho()
+				return self.entre(self.position().x(), bloqueX, bloqueX + bloqueAncho)
+					&& self.position().y() <= bloqueY + b.alto()
+					&& self.position().y() >= bloqueY
+			}
+		}
+
+		assert.equals(pollito.estaSobreBloque(bloque), false)
+	}
+
+	test "El pollito es golpeado lateralmente (lado izquierdo)" {
+		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
+		const pollito = object {
+			method position() = new Position(x = 9, y = 6)
+		}
+
+		assert.equals(true, bloque.chocandoPollito(pollito))
+	}
+
+	test "El pollito está cayendo al costado del bloque (sin chocar)" {
+		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
+		const pollito = object {
+			method position() = new Position(x = 8, y = 12)
+		}
+
+		assert.equals(bloque.chocandoPollito(pollito), false)
+	}
+
 }
