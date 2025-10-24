@@ -44,6 +44,7 @@ object juegoSaltar {
 
 
         game.addVisual(pollito)
+        game.addVisual(puntaje)
 
         game.onCollideDo(pollito, { otro =>
             otro.chocasteConPollito(pollito)
@@ -57,6 +58,8 @@ object juegoSaltar {
 
             bloqueEnJuego = nuevoBloque
             bloques.add(nuevoBloque)
+
+            const intervaloActual = intervaloDeTiempo
 
             game.onTick(intervaloDeTiempo, "moverBloque" + ultimaAltura, { 
                 if(!nuevoBloque.pollitoEnBloque() && !nuevoBloque.seFueDePantalla()){
@@ -75,6 +78,7 @@ object juegoSaltar {
             })
 
             bloquesSaltados += 1
+            puntaje.sumar()
 
             if(bloquesSaltados.even() && bloquesSaltados <= 20){
                 intervaloDeTiempo -= 5
@@ -96,6 +100,7 @@ object juegoSaltar {
         game.clear()
         game.addVisual(mensajePerdiste)
         pollito.reiniciar()
+        puntaje.reiniciar()
         bloquesSaltados = 0
         intervaloDeTiempo = intervaloDeTiempoInicial
         tiempoDeAparicion = tiempoDeAparicionInicial
@@ -114,7 +119,7 @@ object juegoSaltar {
         game.start()
     }
 
-    method actualizarCamara() {
+    /*method actualizarCamara() {
         const alturaPollito = pollito.posicion().y()
         if (alturaPollito > offsetCamara + alturaCamara) {
             const delta = alturaPollito - (offsetCamara + alturaCamara)
@@ -122,5 +127,23 @@ object juegoSaltar {
             bloques.forEach({ b => b.posicion(new Position(x = b.posicion().x(), y = b.posicion().y() - delta ))})
             pollito.posicion(new Position(x = pollito.posicion().x(), y = pollito.posicion().y() - delta)) 
         }
+    }*/
+
+    
+    method actualizarCamara() {
+    const alturaPollito = pollito.posicion().y()
+    if (alturaPollito > offsetCamara + alturaCamara) {
+        const delta = alturaPollito - (offsetCamara + alturaCamara)
+        offsetCamara += delta
+
+        bloques.forEach({ b =>
+            b.posicion(new Position(
+                x = b.posicion().x(),
+                y = b.posicion().y() - delta
+            ))
+        })
     }
+}
+
+    
 }
