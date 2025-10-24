@@ -3,7 +3,7 @@ import tpIntegrador.*
 
 object pollito {
     var property posicion = new Position(x=15, y=0)
-    var enElAire = false
+    var property enElAire = false
     var property ultimaAlturaSegura = 0
     const alturaSalto = 6
     var property velocidadSalto = 60
@@ -17,6 +17,7 @@ object pollito {
         if (!enElAire) { // solo puede saltar si está en el suelo o sobre un bloque
             enElAire = true
             self.subir(alturaSalto, bloqueEnJuego)
+            game.schedule(velocidadSalto * alturaSalto, { self.caer(bloqueEnJuego) })
         }
     }
 
@@ -127,7 +128,12 @@ class Bloque {
 
         const dentroX = (px >= bx) && (px < bx + ancho)
         const dentroY = (py >= by - alto) && (py <= by)
-        return dentroX && dentroY
+        return dentroX && (py < (by + alto - 1))
+
+        /* Copilot dice asi
+        const dentroX =  px >= bx && px <= (bx + ancho - 1)
+        const dentroY = py >= (by + alto - 1)
+        return dentroX && (py < (by + alto - 1)) */
     }
 
     method entre(valor, min, max) = valor >= min && valor <= max
@@ -157,4 +163,20 @@ object camara {
     method aplicar(yMundo) {
         return yMundo - offsetY
     }
+}
+
+object puntaje {
+    var property puntos = 0
+
+    method text() = "Puntuacion: " + puntos.toString()
+
+    method position() = game.at(1, game.height() - 2)
+
+    method reiniciar(){
+        puntos = 0
+    }
+
+    method sumar() {
+        puntos += 1
+    } 
 }
