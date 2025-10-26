@@ -65,9 +65,9 @@ describe "Tests de interaccion Pollito - Bloque" {
 	}
 
 	test "El pollito es golpeado lateralmente (lado izquierdo)" {
-		const bloque = new Bloque(posicion = new Position(x = 10, y = 5))
+		const bloque = new Bloque(posicion = new Position(x = 9, y = 5))
 		const pollito = object {
-			method position() = new Position(x = 9, y = 6)
+			method position() = new Position(x = 9, y = 5)
 		}
 
 		assert.equals(true, bloque.chocandoPollito(pollito))
