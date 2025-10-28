@@ -1,8 +1,12 @@
 # Grupo
 
-Nombre: **COMPLETAR ACA**
+Nombre: it_error
 
-Integrantes: **COMPLETAR ACA**
+Integrantes:
+- Sofia Arroyo
+- Tomas Rimasa
+- Joaquin Santa Cruz
+- Isabella Mastrangelo
 
 # Consigna TP Integrador
 
@@ -40,8 +44,11 @@ De esa entrega vamos a ayudarles a decidir que agregar para la siguiente entrega
 
 En esta entrega se evaluará el uso de objetos en el tp. Debe haber presente al menos una persona del grupo ese día para la corrección, caso contrario se considera no entregado.
 
-# Juego: NOMBRE
+# Juego: Juego Saltar
 
-DESCRIPCION
+Descripcion: Hacer que el pollito salte cuando llega el bloque, para evitar que el mismo lo tire de la pared, y asi ir subiendo. Pierde cuando el bloque golpea al pollito, o sea cuando no se salto a tiempo. No se gana en un momento puntual, se busca ver cuanto tiempo aguanta.
+Se controla el pollito, aparecera un menu al principio explicando, y cuando se pierda se avisara en pantalla. 
 
-CONTROLES
+Controles: Tecla espacio para saltar
+
+
