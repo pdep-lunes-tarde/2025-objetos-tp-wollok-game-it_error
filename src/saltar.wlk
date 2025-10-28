@@ -39,13 +39,13 @@ object pollito {
             enElAire = false
             if (bloqueEnJuego != null && self.estaSobreBloque(bloqueEnJuego)) {
                 // Alineo al tope del bloque
-                posicion = new Position(x = posicion.x(), y = bloqueEnJuego.position().y() + bloqueEnJuego.alto())
+                posicion = new Position(x = posicion.x(), y = bloqueEnJuego.posicion().y() + bloqueEnJuego.alto())
                 ultimaAlturaSegura = bloqueEnJuego.position().y() + bloqueEnJuego.alto()
                 bloqueEnJuego.detener()
 
                 // Actualizar cámara SOLO al aterrizar sobre bloque
-                if (posicion.y() > camara.offsetY() + juegoSaltar.alturaCamara()) {
-                    juegoSaltar.actualizarCamara()
+                if (posicion.y() > camara.offsetY() + camara.alturaCamara()) {
+                    camara.actualizarSiEsNecesario(self)
                 }
             } else {
                 posicion = new Position(x = posicion.x(), y = ultimaAlturaSegura)
@@ -61,11 +61,11 @@ object pollito {
 
     method estaSobreBloque(bloqueEnJuego) {
         if (bloqueEnJuego == null) return false
-        const bloqueX = bloqueEnJuego.position().x()
-        const bloqueY = bloqueEnJuego.position().y()
+        const bloqueX = bloqueEnJuego.posicion().x()
+        const bloqueY = bloqueEnJuego.posicion().y()
         const bloqueAncho = bloqueEnJuego.ancho()
         
-        return self.entre(self.position().x(), bloqueX, bloqueX + bloqueAncho)
+        return self.entre(self.posicion().x(), bloqueX, bloqueX + bloqueAncho)
             && posicion.y() >= bloqueY + bloqueEnJuego.alto()
             
     }
@@ -134,6 +134,29 @@ class Bloque {
 
     method entre(valor, min, max) = valor >= min && valor <= max
 
+    // modificacion hecha! (pasar esta parte al bloque)
+    method analizarJuego(ultimaAltura, bloques){
+        if(!self.pollitoEnBloque() && !self.seFueDePantalla()){
+            self.move()
+        }
+
+        if(self.chocandoPollito(pollito)){
+            self.chocasteConPollito(pollito)
+            game.removeVisual(self)
+        }
+
+        if(self.seFueDePantalla()){ // si salto uno entero
+            bloques.remove(self)
+            game.removeTickEvent("moverBloque" + ultimaAltura)
+        }
+
+        if(self.pollitoEnBloque()){ 
+            puntaje.sumar()
+            game.removeTickEvent("moverBloque" + ultimaAltura)
+
+        }
+    }
+
 }
 
 //*****************************************************//
@@ -149,17 +172,31 @@ object mensajePerdiste {
 
 //*****************************************************//
 
+// modificacion hecha!! (actulizacion de posiciones solo desde objeto camara)
 object camara {
     var property offsetY = 0
+    const property alturaCamara = 12  // altura a la que el pollito hace mover la cámara (4 bloques)
+
+    method aplicar(yMundo) = yMundo - offsetY
 
     method moverA(y) {
         offsetY = y
     }
 
-    method aplicar(yMundo) {
-        return yMundo - offsetY
+    method actualizarSiEsNecesario(pollito) {
+        const alturaPollito = pollito.posicion().y()
+        if (alturaPollito > offsetY + alturaCamara) {
+            const delta = alturaPollito - (offsetY + alturaCamara)
+            offsetY += delta
+        }
+    }
+
+    method reiniciar() {
+        offsetY = 0
     }
 }
+
+//*****************************************************//
 
 object puntaje {
     var property puntos = 0 

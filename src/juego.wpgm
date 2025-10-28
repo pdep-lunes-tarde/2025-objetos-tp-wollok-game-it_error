@@ -1,6 +1,6 @@
 import tpIntegrador.*
 import wollok.game.*
- 
+   
 program juego {
     juegoSaltar.jugar()
 }
